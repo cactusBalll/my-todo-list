@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QSize, QMimeData, pyqtSignal
 from PyQt5.QtGui import QIcon, QDrag, QCursor
 from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, QHBoxLayout, \
     QListWidgetItem, QLabel, QVBoxLayout, QMainWindow, QComboBox, QPushButton, QMenu, QAction, \
-        QMessageBox
+    QMessageBox
 
 from ..core.user import User
 
@@ -33,15 +33,16 @@ class TodoItem(QWidget):
         EXPIRED: "已截止",
         COMPLETED: "已完成"
     }
-    delete_me = pyqtSignal(QListWidgetItem) # 删除自己信号
-    def __init__(self, title: str, description: str, t: datetime,now:datetime, task: 'Task',
+    delete_me = pyqtSignal(QListWidgetItem)  # 删除自己信号
+
+    def __init__(self, title: str, description: str, t: datetime, now: datetime, task: 'Task',
                  list_item: 'QListWidgetItem', *args, **kwargs) -> None:
         super(TodoItem, self).__init__(*args, **kwargs)
 
         if task.completed:
             state = TodoItem.COMPLETED
-        else:  
-            state = TodoItem.get_state(t,task.deadline,now)
+        else:
+            state = TodoItem.get_state(t, task.deadline, now)
         self.list_item = list_item  # 与之绑定的list_item
         layout = QHBoxLayout()
         layout_left = QVBoxLayout()
@@ -56,12 +57,11 @@ class TodoItem(QWidget):
         layout_right.addWidget(self.state)
         l = QLabel("%d-%d-%d" % (t.year, t.month, t.day), parent=self)
         layout_right.addWidget(l)
-        
 
         layout.addLayout(layout_left)
         layout.addLayout(layout_right)
 
-        self.complete_button = QPushButton("已完成",self)
+        self.complete_button = QPushButton("已完成", self)
         layout.addWidget(self.complete_button)
 
         self.setLayout(layout)
@@ -72,8 +72,9 @@ class TodoItem(QWidget):
         self.task = task  # 保存对应任务的引用
 
         self.show()
+
     @staticmethod
-    def get_state(start: datetime,end:datetime, now:datetime) -> int:
+    def get_state(start: datetime, end: datetime, now: datetime) -> int:
         if now < start:
             if start - now < timedelta(hours=6):
                 return TodoItem.NEAR_START
@@ -97,7 +98,7 @@ class TodoItem(QWidget):
         self.action_important = QAction("设为重要", self)
         self.action_important.triggered.connect(self.rmenu_important)
 
-        self.action_delete = QAction("删除",self.rmenu_edit) 
+        self.action_delete = QAction("删除", self.rmenu_edit)
         self.action_delete.triggered.connect(self.rmenu_delete)
 
         self.rmenu.addActions([self.action_edit, self.action_important])
@@ -109,14 +110,13 @@ class TodoItem(QWidget):
     def rmenu_important(self):
         self.task.importance = 3
         self.title.setStyleSheet("color: red")
-    
+
     def rmenu_delete(self):
         cond = QMessageBox.question(
-            self, "确认删除", "删除后可以在历史任务中找到",QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            self, "确认删除", "删除后可以在历史任务中找到", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
         if cond == QMessageBox.StandardButton.Yes:
             self.task.deleted = True
             TodoItem.delete_me.emit(self.list_item)
-            
 
     def complete_buttpn_clicked(self):
         self.state.setText(TodoItem.str_table[TodoItem.COMPLETED])
@@ -146,7 +146,7 @@ class TodoItem(QWidget):
 
 
 class TodoListPage(QWidget):
-    def __init__(self,user:'User', *args, **kwargs) -> None:
+    def __init__(self, user: 'User', *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
         tool_bar_layout = QHBoxLayout()
@@ -169,32 +169,34 @@ class TodoListPage(QWidget):
         self.user = user
 
         self.show()
+
     def show_view(self, text: str):
         self.user.clear_completed()
         self.todo_list.clear()
         tasks = None
         if text == "本日":
-            tasks = self.user.filter_task_day()
+            tasks = self.user.filter_task_day(datetime.now())
         if text == "本周":
-            tasks = self.user.filter_task_week()
+            tasks = self.user.filter_task_week(datetime.now())
         if text == "本月":
-            tasks = self.user.filter_task_month()
+            tasks = self.user.filter_task_month(datetime.now())
         if text == "全部":
             tasks = self.user.tasks
-        
+
         for task in tasks:
             item = self.construct_list_item(task)
             self.todo_list.setItemWidget(item.list_item, item)
-        
+
     def construct_list_item(self, task: 'Task') -> TodoItem:
         widget = QListWidgetItem(self.todo_list)
-        ret = TodoItem(task.title, task.description, task.start_time, datetime.now(),task, widget, parent=self.todo_list)
+        ret = TodoItem(task.title, task.description, task.start_time,
+                       datetime.now(), task, widget, parent=self.todo_list)
         ret.delete_me.connect(self.delete_item)
         return ret
-    
+
     def delete_item(self, item: QListWidgetItem):
         """从视图中删除列表项"""
-         # 根据item得到它对应的行数
+        # 根据item得到它对应的行数
         row = self.todo_list.indexFromItem(item).row()
         # 删除item
         item = self.todo_list.takeItem(row)
@@ -206,5 +208,3 @@ class TodoListPage(QWidget):
 
     def create_new_task(self):
         pass
-
-

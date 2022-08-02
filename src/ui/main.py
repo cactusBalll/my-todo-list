@@ -3,7 +3,7 @@ import typing
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, QHBoxLayout, \
-    QListWidgetItem, QLabel, QMainWindow, QTabWidget
+    QListWidgetItem, QLabel, QMainWindow, QTabWidget,QPushButton
 from qt_material import apply_stylesheet
 import sys
 
@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
 
         self.todo_list = TodoListPage(test_user,parent=self) # TodoList
         self.tab_widget.addTab(self.todo_list, "TodoList")
+        self.tab_widget.addTab(QLabel("f**k",self),"233")
         self.show()
 
 

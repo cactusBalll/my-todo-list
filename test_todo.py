@@ -1,7 +1,8 @@
 
 
 
-from datetime import datetime
+from datetime import datetime, timedelta
+from src.core.user import User
 import sys
 
 from PyQt5.QtCore import Qt, QSize, QMimeData
@@ -10,7 +11,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, 
     QListWidgetItem, QLabel, QVBoxLayout, QMainWindow, QComboBox, QPushButton, QMenu, QAction
 from src.core.task import Task, TaskBuilder
 
-from src.ui.todo_list import TodoItem
+from src.ui.todo_list import TodoItem, TodoListPage
 import unittest
 
 from qt_material import apply_stylesheet
@@ -43,9 +44,14 @@ class TestItem(unittest.TestCase):
         app = QApplication(sys.argv)
         apply_stylesheet(app, "dark_blue.xml")
 
-        test = Test()
-        sys.exit(app.exec_())
+        #test = Test()
+        test_user = User("default")
+        test_task = TaskBuilder.get_simple_task("DogCraft","game",datetime.now(),datetime.now()+timedelta(days=1))
+        test_user.add_task(test_task)
 
+        todo_list = TodoListPage(test_user) # TodoList
+        sys.exit(app.exec_())
+        
 
 '''class Test233(unittest.TestCase):
     def test_fk(self):
