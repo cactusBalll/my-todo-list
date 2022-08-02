@@ -66,9 +66,10 @@ class User:
         return ret
 
     def clear_completed(self) -> None:
-        """把完成的任务放入历史任务中"""
+        """把完成或被删除的任务放入历史任务中"""
         t = []
         for task in self.tasks:
-            if task.completed:
+            if task.completed or task.deleted:
                 t.append(task)
         self.tasks = list(filter(lambda x: not x.completed, self.tasks))
+        self.history_tasks.extend(t)

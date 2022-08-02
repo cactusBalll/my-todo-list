@@ -1,4 +1,4 @@
-from re import S
+
 from typing import List, Tuple, Union
 from datetime import datetime, timedelta
 
@@ -19,10 +19,12 @@ class Task:
         self.trigger = trigger
         self.category = category
         self.completed = False
+        self.deleted = False
 
     def is_active(self, date_range: Tuple['datetime','datetime']) -> bool:
         # 与设定时间段有交集
         return not (date_range[1] < self.start_time or date_range[0] > self.deadline)
+
 
     def has_tag(self, tag:str) -> bool:
         return tag in self.category
