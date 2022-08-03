@@ -18,8 +18,12 @@ class User:
 
     def filter_task_day(self, date: datetime) -> List['Task']:
         ret = []
+
+        date0 = datetime(date.year,date.month,date.day,0,0)
+        date1 = datetime(date.year,date.month,date.day,23,59)
+
         for task in self.tasks:
-            if task.is_active((date, date,)):
+            if task.is_active((date0, date1,)):
                 ret.append(task)
 
         return ret

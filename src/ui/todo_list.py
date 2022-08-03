@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from src.ui.task_edit import TaskEdit
 from PyQt5.QtCore import Qt, QSize, QMimeData, pyqtSignal
 from PyQt5.QtGui import QIcon, QDrag, QCursor
 from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, QHBoxLayout, \
@@ -7,7 +8,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, 
 
 from ..core.user import User
 
-from ..core.task import Task
+from ..core.task import Task, TaskBuilder
 
 
 class TodoItem(QWidget):
@@ -215,4 +216,10 @@ class TodoListPage(QWidget):
         self.show_view(text)
 
     def create_new_task(self):
-        pass
+        te = TaskEdit("新建任务", TaskBuilder.get_empty_task())
+        te.task_edited.connect(self.task_added)
+        te.exec()
+    
+    def task_added(self, task: Task):
+        self.user.add_task(task)
+        self.show_view(self.select_view_combo.currentText())
