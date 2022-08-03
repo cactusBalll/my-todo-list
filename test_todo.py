@@ -62,6 +62,6 @@ class TestTask(unittest.TestCase):
         task = TaskBuilder.get_simple_task('233', '233', None, None)
         print(task)
 '''
-
+ 
 if __name__ == "__main__":
     unittest.main()

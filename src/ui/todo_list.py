@@ -62,6 +62,7 @@ class TodoItem(QWidget):
         layout.addLayout(layout_right)
 
         self.complete_button = QPushButton("已完成", self)
+        self.complete_button.clicked.connect(self.complete_button_clicked)
         layout.addWidget(self.complete_button)
 
         self.setLayout(layout)
@@ -71,6 +72,7 @@ class TodoItem(QWidget):
 
         self.task = task  # 保存对应任务的引用
 
+        
         self.show()
 
     @staticmethod
@@ -98,10 +100,10 @@ class TodoItem(QWidget):
         self.action_important = QAction("设为重要", self)
         self.action_important.triggered.connect(self.rmenu_important)
 
-        self.action_delete = QAction("删除", self.rmenu_edit)
+        self.action_delete = QAction("删除", self)
         self.action_delete.triggered.connect(self.rmenu_delete)
 
-        self.rmenu.addActions([self.action_edit, self.action_important])
+        self.rmenu.addActions([self.action_edit, self.action_important, self.action_delete])
         self.rmenu.popup(QCursor.pos())
 
     def rmenu_edit(self):
@@ -116,9 +118,9 @@ class TodoItem(QWidget):
             self, "确认删除", "删除后可以在历史任务中找到", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
         if cond == QMessageBox.StandardButton.Yes:
             self.task.deleted = True
-            TodoItem.delete_me.emit(self.list_item)
+            self.delete_me.emit(self.list_item)
 
-    def complete_buttpn_clicked(self):
+    def complete_button_clicked(self):
         self.state.setText(TodoItem.str_table[TodoItem.COMPLETED])
         self.state.setStyleSheet("color: %s" %
                                  TodoItem.color_table[TodoItem.COMPLETED])
@@ -151,7 +153,7 @@ class TodoListPage(QWidget):
         layout = QVBoxLayout()
         tool_bar_layout = QHBoxLayout()
 
-        self.new_task_button = QPushButton(self)
+        self.new_task_button = QPushButton("新建任务",self)
         self.new_task_button.clicked.connect(self.create_new_task)
         tool_bar_layout.addWidget(self.new_task_button)
 
@@ -168,6 +170,11 @@ class TodoListPage(QWidget):
 
         self.user = user
 
+        '''self.setStyleSheet("""
+            QListWidgetItem {
+                min-height: 120px
+            }
+        """)'''
         self.show()
 
     def show_view(self, text: str):
@@ -189,6 +196,7 @@ class TodoListPage(QWidget):
 
     def construct_list_item(self, task: 'Task') -> TodoItem:
         widget = QListWidgetItem(self.todo_list)
+        widget.setSizeHint(QSize(60,100))
         ret = TodoItem(task.title, task.description, task.start_time,
                        datetime.now(), task, widget, parent=self.todo_list)
         ret.delete_me.connect(self.delete_item)
