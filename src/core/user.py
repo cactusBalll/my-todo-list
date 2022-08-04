@@ -16,32 +16,41 @@ class User:
         self.tasks.append(task)
     # filter_* 返回符合条件的
 
-    def filter_task_day(self, date: datetime) -> List['Task']:
+    def filter_task_day(self, date: datetime, history=False) -> List['Task']:
         ret = []
 
         date0 = datetime(date.year,date.month,date.day,0,0)
         date1 = datetime(date.year,date.month,date.day,23,59)
 
-        for task in self.tasks:
+        tasks = self.tasks
+        if history:
+            tasks = self.history_tasks
+
+        for task in tasks:
             if task.is_active((date0, date1,)):
                 ret.append(task)
 
         return ret
 
-    def filter_task_week(self, week_of_date: datetime) -> List['Task']:
+    def filter_task_week(self, week_of_date: datetime, history=False) -> List['Task']:
         ret = []
         weekday = week_of_date.date().weekday()
         delta_time0 = timedelta(weekday)
         delta_time1 = timedelta(6-weekday)
         date0 = week_of_date - delta_time0
         date1 = week_of_date + delta_time1
-        for task in self.tasks:
+
+        tasks = self.tasks
+        if history:
+            tasks = self.history_tasks
+            
+        for task in tasks:
             if task.is_active((date0, date1,)):
                 ret.append(task)
 
         return ret
 
-    def filter_task_month(self, month_of_date: datetime) -> List['Task']:
+    def filter_task_month(self, month_of_date: datetime, history=False) -> List['Task']:
         ret = []
         one_day = timedelta(1)
 
@@ -55,7 +64,11 @@ class User:
             date1 += one_day
         date0 -= one_day
 
-        for task in self.tasks:
+        tasks = self.tasks
+        if history:
+            tasks = self.history_tasks
+
+        for task in tasks:
             if task.is_active((date0, date1,)):
                 ret.append(task)
 

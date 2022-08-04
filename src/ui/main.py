@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from src.ui.history_task import HistoryTaskPage
 import typing
 from PyQt5.QtCore import Qt, QSize, QRect
 from PyQt5.QtGui import QIcon
@@ -33,9 +34,14 @@ class MainWindow(QMainWindow):
         test_task = TaskBuilder.get_simple_task("WarCraft","game",datetime.now()+timedelta(days=1),datetime.now()+timedelta(days=2))
         test_user.add_task(test_task)
 
+
+        
         self.todo_list = TodoListPage(test_user,) # TodoList
+        self.history_list = HistoryTaskPage(test_user,)
+
         self.tab_widget.addTab(self.todo_list, "TodoList")
-        self.tab_widget.addTab(QLabel("f**k"),"233")
+        self.tab_widget.addTab(self.history_list, "历史任务")
+        
         
         self.setGeometry(300,300, 1366, 768)
         self.show()
