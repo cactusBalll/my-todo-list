@@ -92,3 +92,6 @@ class User:
         self.tasks = list(
             filter(lambda x: not x.completed and not x.deleted, self.tasks))
         self.history_tasks.extend(t)
+
+    def __repr__(self) -> str:
+        return str(self.__dict__)

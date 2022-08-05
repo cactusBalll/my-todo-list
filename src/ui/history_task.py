@@ -1,5 +1,6 @@
 
 from datetime import datetime, timedelta
+from src.core.storage import Storage
 from src.ui.task_edit import TaskEdit
 from PyQt5.QtCore import Qt, QSize, QMimeData, pyqtSignal
 from PyQt5.QtGui import QIcon, QDrag, QCursor
@@ -73,6 +74,7 @@ class HistoryTodoItem(QWidget):
         self.task = task  # 保存对应任务的引用
 
         self.show()
+        
 
     @staticmethod
     def get_state(start: datetime, end: datetime, now: datetime) -> int:
@@ -118,6 +120,7 @@ class HistoryTodoItem(QWidget):
         self.add_to_todo.emit(task)
         self.delete_me.emit(self.list_item, task)
         self.refresh_list.emit()
+        Storage.save()
 
     def rmenu_delete(self):
         cond = QMessageBox.question(
@@ -125,6 +128,7 @@ class HistoryTodoItem(QWidget):
         if cond == QMessageBox.StandardButton.Yes:
             self.task.deleted = True
             self.delete_me.emit(self.list_item, self.task)
+            Storage.save()
 
     def mouseMoveEvent(self, e):
         # 用于拖拽
@@ -173,6 +177,7 @@ class HistoryTaskPage(QWidget):
             }
         """)'''
         self.show()
+        self.show_view(self.select_view_combo.currentText())
 
     def show_view(self, text: str):
         self.user.clear_completed()
@@ -213,9 +218,14 @@ class HistoryTaskPage(QWidget):
         # 删除widget
         self.todo_list.removeItemWidget(item)
         self.user.history_tasks.remove(task)
+        Storage.save()
 
     def add_to_todo(self, task: Task):
         self.user.add_task(task)
 
     def view_changed(self, text: str):
         self.show_view(text)
+
+    def change_user(self, user: 'User'):
+        self.user = user
+        self.show_view(self.select_view_combo.currentText())

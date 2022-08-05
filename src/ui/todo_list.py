@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from src.core.storage import Storage
 from src.ui.task_edit import TaskEdit
 from PyQt5.QtCore import Qt, QSize, QMimeData, pyqtSignal
 from PyQt5.QtGui import QIcon, QDrag, QCursor
@@ -120,6 +121,7 @@ class TodoItem(QWidget):
     def rmenu_important(self):
         self.task.importance = 3
         self.title.setStyleSheet("color: red")
+        Storage.save()
 
     def rmenu_delete(self):
         cond = QMessageBox.question(
@@ -127,6 +129,7 @@ class TodoItem(QWidget):
         if cond == QMessageBox.StandardButton.Yes:
             self.task.deleted = True
             self.delete_me.emit(self.list_item)
+            Storage.save()
 
     def complete_button_clicked(self):
         self.state.setText(TodoItem.str_table[TodoItem.COMPLETED])
@@ -134,6 +137,7 @@ class TodoItem(QWidget):
                                  TodoItem.color_table[TodoItem.COMPLETED])
         # 标记为已完成的项仍然会显示在界面上，切换时会清理掉
         self.task.set_completed()
+        Storage.save()
 
     def mouseMoveEvent(self, e):
         # 用于拖拽
@@ -186,6 +190,7 @@ class TodoListPage(QWidget):
             }
         """)'''
         self.show()
+        self.show_view(self.select_view_combo.currentText())
 
     def show_view(self, text: str):
         self.user.clear_completed()
@@ -236,4 +241,8 @@ class TodoListPage(QWidget):
     def task_added(self, task: Task):
         self.user.add_task(task)
         self.show_view(self.select_view_combo.currentText())
+        Storage.save()
 
+    def change_user(self, user: 'User'):
+        self.user = user
+        self.show_view(self.select_view_combo.currentText())
