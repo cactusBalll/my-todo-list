@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from src.core.storage import Storage
+from src.ui.calender import TodoCalender
 from src.ui.user_config import UserConfigPage
 from src.ui.history_task import HistoryTaskPage
 import typing
@@ -41,8 +42,16 @@ class MainWindow(QMainWindow):
         self.user_config = UserConfigPage(s, user_name)
         self.user_config.sig_user_change.connect(self.change_user)
 
+        self.calender = TodoCalender(s.get_user_by_name(user_name))
+
+        self.todo_list.sig_sync.connect(self.sync_task)
+        self.history_list.sig_sync.connect(self.sync_task)
+        self.calender.sig_sync.connect(self.sync_task)
+
+        
         self.tab_widget.addTab(self.todo_list, "TodoList")
         self.tab_widget.addTab(self.history_list, "历史任务")
+        self.tab_widget.addTab(self.calender, "日历")
         self.tab_widget.addTab(self.user_config, "用户设置")
 
         self.setGeometry(300, 300, 1366, 768)
@@ -51,3 +60,10 @@ class MainWindow(QMainWindow):
     def change_user(self, user: 'User'):
         self.todo_list.change_user(user)
         self.history_list.change_user(user)
+        self.calender.change_user(user)
+
+    def sync_task(self):
+        """将task数据的变化和GUI同步"""
+        self.todo_list.sync_task()
+        self.history_list.sync_task()
+        self.calender.sync_task()

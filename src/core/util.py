@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from PyQt5.QtCore import QDateTime
+from PyQt5.QtCore import QDateTime, QDate
 
 
 def QDateTime2Pydatetime(src: 'QDateTime') -> 'datetime':
@@ -14,3 +14,6 @@ def QDateTime2Pydatetime(src: 'QDateTime') -> 'datetime':
 def Pydatetime2QDateTime(src: 'datetime') -> 'QDateTime':
     return QDateTime(src.year, src.month, src.day,
                      src.hour, src.minute, src.second)
+
+def QDate2Pydatetime(src: 'QDate') -> 'datetime':
+    return datetime(src.year(),src.month(),src.day())

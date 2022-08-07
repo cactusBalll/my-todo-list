@@ -160,6 +160,7 @@ class TodoItem(QWidget):
 
 
 class TodoListPage(QWidget):
+    sig_sync = pyqtSignal()
     def __init__(self, user: 'User', *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
@@ -220,6 +221,7 @@ class TodoListPage(QWidget):
 
     def refresh_view(self) -> None:
         self.show_view(self.select_view_combo.currentText())
+        self.sig_sync.emit()
 
     def delete_item(self, item: QListWidgetItem):
         """从视图中删除列表项"""
@@ -229,6 +231,7 @@ class TodoListPage(QWidget):
         item = self.todo_list.takeItem(row)
         # 删除widget
         self.todo_list.removeItemWidget(item)
+        self.sig_sync.emit()
 
     def view_changed(self, text: str):
         self.show_view(text)
@@ -242,7 +245,11 @@ class TodoListPage(QWidget):
         self.user.add_task(task)
         self.show_view(self.select_view_combo.currentText())
         Storage.save()
+        self.sig_sync.emit()
 
     def change_user(self, user: 'User'):
         self.user = user
+        self.show_view(self.select_view_combo.currentText())
+
+    def sync_task(self):
         self.show_view(self.select_view_combo.currentText())

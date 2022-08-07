@@ -151,6 +151,7 @@ class HistoryTodoItem(QWidget):
 
 
 class HistoryTaskPage(QWidget):
+    sig_sync = pyqtSignal()
     def __init__(self, user: 'User', *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
@@ -208,6 +209,7 @@ class HistoryTaskPage(QWidget):
 
     def refresh_view(self) -> None:
         self.show_view(self.select_view_combo.currentText())
+        self.sig_sync.emit()
 
     def delete_item(self, item: QListWidgetItem, task: 'Task'):
         """从视图中删除列表项"""
@@ -219,6 +221,7 @@ class HistoryTaskPage(QWidget):
         self.todo_list.removeItemWidget(item)
         self.user.history_tasks.remove(task)
         Storage.save()
+        self.sig_sync.emit()
 
     def add_to_todo(self, task: Task):
         self.user.add_task(task)
@@ -228,4 +231,7 @@ class HistoryTaskPage(QWidget):
 
     def change_user(self, user: 'User'):
         self.user = user
+        self.show_view(self.select_view_combo.currentText())
+
+    def sync_task(self):
         self.show_view(self.select_view_combo.currentText())
