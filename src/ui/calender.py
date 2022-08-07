@@ -84,6 +84,7 @@ class TodoCalender(QWidget):
         self.user = user
         self.show_view(datetime.now())
         self.canlender.setSelectedDate(date.today())
+        self.calender_task_coloring()
 
     def calender_task_coloring(self):
         """用不同颜色标记有任务开始或者截止的日期"""

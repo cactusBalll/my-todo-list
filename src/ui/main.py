@@ -48,14 +48,14 @@ class MainWindow(QMainWindow):
         self.history_list.sig_sync.connect(self.sync_task)
         self.calender.sig_sync.connect(self.sync_task)
 
-        
+
         self.tab_widget.addTab(self.todo_list, "TodoList")
         self.tab_widget.addTab(self.history_list, "历史任务")
         self.tab_widget.addTab(self.calender, "日历")
         self.tab_widget.addTab(self.user_config, "用户设置")
 
-        self.setGeometry(300, 300, 1366, 768)
-        self.show()
+        self.setGeometry(300, 300, 720, 480)
+        #self.show()
 
     def change_user(self, user: 'User'):
         self.todo_list.change_user(user)

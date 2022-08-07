@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QSize, QMimeData, pyqtSignal
 from PyQt5.QtGui import QIcon, QDrag, QCursor
 from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, QHBoxLayout, \
     QListWidgetItem, QLabel, QVBoxLayout, QMainWindow, QComboBox, QPushButton, QMenu, QAction, \
-    QMessageBox, QDialog
+    QMessageBox, QDialog, QInputDialog
 
 
 class UserConfigPage(QWidget):
@@ -22,11 +22,24 @@ class UserConfigPage(QWidget):
         self.s = s
         self.current_user = s.get_user_by_name(name)
         self.name_label = QLabel(self.current_user.name, self)
-        self.name_label.setStyleSheet("font: 42px")
+        self.name_label.setStyleSheet("font: 42px; margin-bottom: 300px")
         layout.addWidget(self.name_label)
+
+        self.rename_btn = QPushButton("修改用户名",self)
+        self.rename_btn.clicked.connect(self.user_renaming)
+        self.rename_btn.setStyleSheet("margin-right: 300px")
+        layout.addWidget(self.rename_btn)
 
         self.btn0 = QPushButton("切换用户", self)
         self.btn0.clicked.connect(self.user_changing)
+        self.btn0.setStyleSheet("margin-right: 300px")
+        layout.addWidget(self.btn0)
+
+        self.btn1 = QPushButton("创建新用户", self)
+        self.btn1.clicked.connect(self.user_creating)
+        self.btn1.setStyleSheet("margin-right: 300px")
+        layout.addWidget(self.btn1)
+
 
         self.setLayout(layout)
 
@@ -37,6 +50,23 @@ class UserConfigPage(QWidget):
 
     def user_changed(self, user_name: str):
         self.sig_user_change.emit(self.s.get_user_by_name(user_name))
+        self.name_label.setText(user_name)
+        self.current_user = self.s.get_user_by_name(user_name)
+
+    def user_renaming(self):
+        text, ok = QInputDialog.getText(self,"输入名字","输入新用户名")
+        if ok:
+            self.current_user.name = text
+            self.name_label.setText(text)
+
+    def user_creating(self):
+        text, ok = QInputDialog.getText(self,"创建并切换到新用户","输入新用户名")
+        if ok:
+            self.current_user = User(text)
+            self.s.users.append(self.current_user)
+            self.name_label.setText(text)
+            self.sig_user_change.emit(self.current_user)
+            self.s.save()
 
 
 class ChangeUserDialog(QDialog):
