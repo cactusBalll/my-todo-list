@@ -144,9 +144,9 @@ class User:
                 for i in range(remain_hour):
                     ret.append(tasks_not_dead_today[i])
 
-        print("here here")
-        for i in ret:
-            print(i.title, i.deadline, sep=" endtime: ")
+        # print("here here")
+        # for i in ret:
+        #     print(i.title, i.deadline, sep=" endtime: ")
         return ret
 
 
