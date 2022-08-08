@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from src.core.storage import Storage
 from src.ui.calender import TodoCalender
+from src.ui.daily_list import DailyListPage
 from src.ui.user_config import UserConfigPage
 from src.ui.history_task import HistoryTaskPage
 import typing
@@ -45,14 +46,18 @@ class MainWindow(QMainWindow,QtStyleTools):
 
         self.calender = TodoCalender(s.get_user_by_name(user_name))
 
+        self.daily = DailyListPage(s.get_user_by_name(user_name))
+
         self.todo_list.sig_sync.connect(self.sync_task)
         self.history_list.sig_sync.connect(self.sync_task)
         self.calender.sig_sync.connect(self.sync_task)
+        self.daily.sig_sync.connect(self.sync_task)
 
 
         self.tab_widget.addTab(self.todo_list, "TodoList")
         self.tab_widget.addTab(self.history_list, "历史任务")
         self.tab_widget.addTab(self.calender, "日历")
+        self.tab_widget.addTab(self.daily, "周期性任务")
         self.tab_widget.addTab(self.user_config, "用户设置")
 
         self.setGeometry(300, 300, 720, 480)

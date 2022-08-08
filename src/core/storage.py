@@ -1,4 +1,5 @@
 
+from datetime import date
 import os
 import pickle
 import sys
@@ -13,6 +14,7 @@ class Storage:
     instance = None
     def __init__(self) -> None:
         self.users: List[User] = []
+        self.last_login_time: date = date.today()
         self.path = os.path.expanduser('~')  # Users\pc or ~/pc
     @staticmethod
     def get_instance() -> 'Storage':

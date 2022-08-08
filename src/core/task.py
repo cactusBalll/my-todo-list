@@ -1,6 +1,7 @@
 
+import copy
 from typing import List, Tuple, Union
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 
 class Task:
@@ -53,13 +54,41 @@ class Trigger:
     PER_WEEK = 2
     PER_MONTH = 3
 
-    def __init__(self, trig_type: int,
-                 cycle: int, first_time: 'datetime',
+    hint = {
+        ONCE: '一次',
+        PER_DAY: '每日',
+        PER_WEEK: '每周',
+        PER_MONTH: '每月',
+    }
+
+    def __init__(self, cycle: int,
                  task: 'Task') -> None:
-        self.trig_type = trig_type
         self.cycle = cycle  # 触发描述，每周周几？每月几号？
-        self.first_time = first_time  # 首次触发时间
         self.task = task  # 用于周期创建的任务模板
+
+    def get_trigger_description_str(self) -> str:
+        return Trigger.hint[self.cycle]
+
+    def generate_task(self, d: date) -> Task:
+        """如果当前日期应该生成一个Task,则生成,否则返回空"""
+        delta_time = self.task.deadline - self.task.start_time
+        ret = copy.deepcopy(self.task)
+        ret.start_time = datetime(
+            d.year, d.month, 
+            d.day, self.task.start_time.hour,
+            self.task.start_time.minute
+            )
+        ret.deadline = ret.start_time + delta_time
+        if self.cycle == Trigger.PER_DAY:
+            return ret
+        if self.cycle == Trigger.PER_WEEK:
+            if self.task.start_time.weekday() == d.weekday():
+                return ret
+        if self.cycle == Trigger.PER_MONTH:
+            if self.task.start_time.day == d.day:
+                return ret
+
+        return None
 
 
 class TaskBuilder:
@@ -74,3 +103,7 @@ class TaskBuilder:
     def get_empty_task() -> Task:
         """for test"""
         return Task(None, None, None, None, 0, 0, None, None)
+
+    @staticmethod
+    def get_empty_trigger() -> Trigger:
+        return Trigger(Trigger.PER_DAY, TaskBuilder.get_empty_task())
