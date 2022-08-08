@@ -172,7 +172,7 @@ class TodoListPage(QWidget):
 
         self.select_view_combo = QComboBox(self)
         
-        self.select_view_combo.addItems(["本日", "本周", "本月", "全部"])
+        self.select_view_combo.addItems(["本日", "本周", "本月", "全部", "自动"])
         self.select_view_combo.activated[str].connect(self.view_changed)
         self.select_view_combo.setCurrentIndex(0)
         tool_bar_layout.addWidget(self.select_view_combo)
@@ -199,13 +199,14 @@ class TodoListPage(QWidget):
         tasks = None
         if text == "本日":
             tasks = self.user.filter_task_day(datetime.now())
-            #tasks = self.user.auto_schdule_tasks(datetime.now())
         if text == "本周":
             tasks = self.user.filter_task_week(datetime.now())
         if text == "本月":
             tasks = self.user.filter_task_month(datetime.now())
         if text == "全部":
             tasks = self.user.tasks
+        if text == "自动":
+            tasks = self.user.auto_schedule_tasks(datetime.now())
 
         for task in tasks:
             item = self.construct_list_item(task)
