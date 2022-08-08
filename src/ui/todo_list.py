@@ -199,6 +199,7 @@ class TodoListPage(QWidget):
         tasks = None
         if text == "本日":
             tasks = self.user.filter_task_day(datetime.now())
+            #tasks = self.user.auto_schdule_tasks(datetime.now())
         if text == "本周":
             tasks = self.user.filter_task_week(datetime.now())
         if text == "本月":
