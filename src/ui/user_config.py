@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, 
 class UserConfigPage(QWidget):
     """用户配置页面"""
     sig_user_change = pyqtSignal(User)
+    sig_theme_change = pyqtSignal()
 
     def __init__(self, s: Storage, name: str,
                  *args, **kwargs) -> None:
@@ -39,6 +40,11 @@ class UserConfigPage(QWidget):
         self.btn1.clicked.connect(self.user_creating)
         self.btn1.setStyleSheet("margin-right: 300px")
         layout.addWidget(self.btn1)
+
+        self.btn2 = QPushButton("切换暗色主题", self)
+        self.btn2.clicked.connect(self.theme_changing)
+        self.btn2.setStyleSheet("margin-right: 300px")
+        layout.addWidget(self.btn2)
 
 
         self.setLayout(layout)
@@ -68,6 +74,8 @@ class UserConfigPage(QWidget):
             self.sig_user_change.emit(self.current_user)
             self.s.save()
 
+    def theme_changing(self):
+        self.sig_theme_change.emit()
 
 class ChangeUserDialog(QDialog):
     """切换用户对话框"""
