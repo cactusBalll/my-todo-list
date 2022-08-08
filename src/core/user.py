@@ -95,3 +95,21 @@ class User:
 
     def __repr__(self) -> str:
         return str(self.__dict__)
+
+    def auto_schdule_tasks(self, week_of_date: datetime) -> List['Task']:
+        """根据空闲时间自动调度任务，仅排今日需要做的任务"""
+        """最早截止时间优先"""
+        tasks_today = self.filter_task_day(week_of_date, False)
+        ret = sorted(tasks_today, key=lambda t: t.deadline)
+        print("here here")
+        return ret
+
+
+
+
+
+
+
+
+
+
