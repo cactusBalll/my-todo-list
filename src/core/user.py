@@ -128,25 +128,35 @@ class User:
             # 可以今日截止的话
             if date_now_hour + task.timecost <= 23:
                 if datetime(date_now.year, date_now.month, date_now.day, date_now_hour + task.timecost, date_now.minute) <= task.deadline:
+                    task.running_start_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour, date_now.minute)
+                    task.running_end_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour + task.timecost, date_now.minute)
                     date_now_hour += task.timecost
                     ret.append(task)
 
         # 截止在今日而且做不完的任务直接给扔了zzzzz
 
         if date_now_hour < 23:
-            # 如果剩余小时>=任务数
+            # 如果剩余小时>=任务数，则给每个任务平均分配时间
             if 24 - date_now_hour - 1 >= len(tasks_not_dead_today):
-                # every_task_time = (24 - date_now.hour - 1) // len(tasks_dead_today)
+                every_task_time = (24 - date_now.hour - 1) // len(tasks_dead_today)
+                for task in tasks_not_dead_today:
+                    task.running_start_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour, date_now.minute)
+                    task.running_end_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour + every_task_time, date_now.minute)
+                    date_now_hour += every_task_time
+
                 ret += tasks_not_dead_today
-            #否则，最早截止时间优先
+            #否则，最早截止时间优先,每个任务分配一个小时
             else:
                 remain_hour = 24 - date_now_hour - 1
                 for i in range(remain_hour):
+                    tasks_not_dead_today[i].running_start_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour, date_now.minute)
+                    tasks_not_dead_today[i].running_end_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour + 1, date_now.minute)
+                    date_now_hour += 1
                     ret.append(tasks_not_dead_today[i])
 
-        # print("here here")
-        # for i in ret:
-        #     print(i.title, i.deadline, sep=" endtime: ")
+        print("here here")
+        for i in ret:
+            print(i.title, "startTime: ", i.running_start_time, "endTime: ", i.running_end_time, sep=" ")
         return ret
 
 

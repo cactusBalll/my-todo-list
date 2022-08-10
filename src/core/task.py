@@ -23,6 +23,10 @@ class Task:
         self.completed = False
         self.deleted = False
 
+        # 被任务调度分配的起止时间
+        self.running_start_time = None
+        self.running_end_time = None
+
     def is_active(self, date_range: Tuple['datetime', 'datetime']) -> bool:
         # 与设定时间段有交集
         return not (date_range[1] < self.start_time or date_range[0] > self.deadline)
