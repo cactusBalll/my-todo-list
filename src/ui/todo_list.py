@@ -172,7 +172,7 @@ class TodoListPage(QWidget):
 
         # add
         self.new_task_button_c = QPushButton("今日任务安排", self)
-        self.new_task_button.clicked.connect(self.schedule_tasks_auto)
+        self.new_task_button_c.clicked.connect(self.schedule_tasks_auto)
         tool_bar_layout.addWidget(self.new_task_button_c)
 
         self.select_view_combo = QComboBox(self)
@@ -263,6 +263,7 @@ class TodoListPage(QWidget):
 
     def schedule_tasks_auto(self):
         tasks = self.user.auto_schedule_tasks(datetime.now())
+        self.todo_list.clear()
         for task in tasks:
             item = self.construct_list_item(task)
             self.todo_list.setItemWidget(item.list_item, item)
