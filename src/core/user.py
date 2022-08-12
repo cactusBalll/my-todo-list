@@ -54,12 +54,12 @@ class User:
         ret = []
         one_day = timedelta(1)
 
-        date0 = copy(month_of_date)
+        date0 = copy.copy(month_of_date)
         while date0.month == month_of_date.month:
             date0 -= one_day
         date0 += one_day
 
-        date1 = copy(month_of_date)
+        date1 = copy.copy(month_of_date)
         while date1.month == month_of_date.month:
             date1 += one_day
         date0 -= one_day
