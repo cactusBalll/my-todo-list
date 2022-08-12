@@ -135,10 +135,10 @@ class User:
 
         # 截止在今日而且做不完的任务直接给扔了zzzzz
 
-        if date_now_hour < 23:
+        if date_now_hour < 23 and len(tasks_not_dead_today) > 0:
             # 如果剩余小时>=任务数，则给每个任务平均分配时间
             if 24 - date_now_hour - 1 >= len(tasks_not_dead_today):
-                every_task_time = (24 - date_now.hour - 1) // len(tasks_dead_today)
+                every_task_time = (24 - date_now_hour - 1) // len(tasks_not_dead_today)
                 for task in tasks_not_dead_today:
                     task.running_start_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour, date_now.minute)
                     task.running_end_time = datetime(date_now.year, date_now.month, date_now.day, date_now_hour + every_task_time, date_now.minute)

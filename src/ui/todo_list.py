@@ -170,9 +170,14 @@ class TodoListPage(QWidget):
         self.new_task_button.clicked.connect(self.create_new_task)
         tool_bar_layout.addWidget(self.new_task_button)
 
+        # add
+        self.new_task_button_c = QPushButton("今日任务安排", self)
+        self.new_task_button.clicked.connect(self.schedule_tasks_auto)
+        tool_bar_layout.addWidget(self.new_task_button_c)
+
         self.select_view_combo = QComboBox(self)
         
-        self.select_view_combo.addItems(["本日", "本周", "本月", "全部", "自动"])
+        self.select_view_combo.addItems(["本日", "本周", "本月", "全部"])
         self.select_view_combo.activated[str].connect(self.view_changed)
         self.select_view_combo.setCurrentIndex(0)
         tool_bar_layout.addWidget(self.select_view_combo)
@@ -205,8 +210,8 @@ class TodoListPage(QWidget):
             tasks = self.user.filter_task_month(datetime.now())
         if text == "全部":
             tasks = self.user.tasks
-        if text == "自动":
-            tasks = self.user.auto_schedule_tasks(datetime.now())
+        # if text == "自动":
+        #     tasks = self.user.auto_schedule_tasks(datetime.now())
 
         for task in tasks:
             item = self.construct_list_item(task)
@@ -255,3 +260,9 @@ class TodoListPage(QWidget):
 
     def sync_task(self):
         self.show_view(self.select_view_combo.currentText())
+
+    def schedule_tasks_auto(self):
+        tasks = self.user.auto_schedule_tasks(datetime.now())
+        for task in tasks:
+            item = self.construct_list_item(task)
+            self.todo_list.setItemWidget(item.list_item, item)
