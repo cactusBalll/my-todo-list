@@ -23,8 +23,15 @@ class UserConfigPage(QWidget):
         self.s = s
         self.current_user = s.get_user_by_name(name)
         self.name_label = QLabel(self.current_user.name, self)
-        self.name_label.setStyleSheet("font: 42px; margin-bottom: 300px")
+        self.name_label.setStyleSheet("font: 42px; margin-bottom: 150px")
         layout.addWidget(self.name_label)
+
+        t = (len(self.current_user.tasks) + len(self.current_user.history_tasks))
+        all_task_num =  t if t > 0 else 1
+        complete_ratio = len(list(filter(lambda t:t.completed, self.current_user.history_tasks))) / all_task_num
+        self.cp_ratio_lb = QLabel(f"当前任务完成率:{complete_ratio*100:.2f}%")
+        self.cp_ratio_lb.setStyleSheet("font: 36px;")
+        layout.addWidget(self.cp_ratio_lb)
 
         self.rename_btn = QPushButton("修改用户名",self)
         self.rename_btn.clicked.connect(self.user_renaming)
@@ -49,6 +56,12 @@ class UserConfigPage(QWidget):
 
         self.setLayout(layout)
 
+    def calcu_cp_ratio(self):
+        t = (len(self.current_user.tasks) + len(self.current_user.history_tasks))
+        all_task_num =  t if t > 0 else 1
+        complete_ratio = len(list(filter(lambda t:t.completed, self.current_user.history_tasks))) / all_task_num
+        return complete_ratio
+
     def user_changing(self):
         self.change_user_dialog = ChangeUserDialog(self.s.get_user_names(), self)
         self.change_user_dialog.user_changed.connect(self.user_changed)
@@ -58,6 +71,7 @@ class UserConfigPage(QWidget):
         self.sig_user_change.emit(self.s.get_user_by_name(user_name))
         self.name_label.setText(user_name)
         self.current_user = self.s.get_user_by_name(user_name)
+        self.cp_ratio_lb.setText(f"当前任务完成率:{self.calcu_cp_ratio()*100:.2f}%")
 
     def user_renaming(self):
         text, ok = QInputDialog.getText(self,"输入名字","输入新用户名")
@@ -76,6 +90,9 @@ class UserConfigPage(QWidget):
 
     def theme_changing(self):
         self.sig_theme_change.emit()
+
+    def sync_task(self):
+        self.cp_ratio_lb.setText(f"当前任务完成率:{self.calcu_cp_ratio()*100:.2f}%")
 
 class ChangeUserDialog(QDialog):
     """切换用户对话框"""

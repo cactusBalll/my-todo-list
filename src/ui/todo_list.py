@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
+from typing import List
 from src.core.storage import Storage
+from .daily_list import DailyItem
 from src.ui.task_edit import TaskEdit
 from PyQt5.QtCore import Qt, QSize, QMimeData, pyqtSignal
 from PyQt5.QtGui import QIcon, QDrag, QCursor
 from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QStackedWidget, QHBoxLayout, \
     QListWidgetItem, QLabel, QVBoxLayout, QMainWindow, QComboBox, QPushButton, QMenu, QAction, \
-    QMessageBox
+    QMessageBox, QDialog
 
 from ..core.user import User
 
@@ -139,7 +141,7 @@ class TodoItem(QWidget):
         self.task.set_completed()
         Storage.save()
 
-    def mouseMoveEvent(self, e):
+    '''def mouseMoveEvent(self, e):
         # 用于拖拽
         # if e.buttons() != Qt.RightButton:
         #    return
@@ -150,7 +152,7 @@ class TodoItem(QWidget):
         drag.setMimeData(mimeData)
         drag.setHotSpot(e.pos() - self.rect().topLeft())
 
-        dropAction = drag.exec_(Qt.MoveAction)
+        dropAction = drag.exec_(Qt.MoveAction)'''
 
     def get_state_widget(self, state: int) -> QLabel:
 
@@ -161,6 +163,7 @@ class TodoItem(QWidget):
 
 class TodoListPage(QWidget):
     sig_sync = pyqtSignal()
+
     def __init__(self, user: 'User', *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
@@ -176,8 +179,9 @@ class TodoListPage(QWidget):
         tool_bar_layout.addWidget(self.new_task_button_c)
 
         self.select_view_combo = QComboBox(self)
-        
+
         self.select_view_combo.addItems(["本日", "本周", "本月", "全部"])
+        self.select_view_combo.addItems(user.get_tags())
         self.select_view_combo.activated[str].connect(self.view_changed)
         self.select_view_combo.setCurrentIndex(0)
         tool_bar_layout.addWidget(self.select_view_combo)
@@ -204,12 +208,14 @@ class TodoListPage(QWidget):
         tasks = None
         if text == "本日":
             tasks = self.user.filter_task_day(datetime.now())
-        if text == "本周":
+        elif text == "本周":
             tasks = self.user.filter_task_week(datetime.now())
-        if text == "本月":
+        elif text == "本月":
             tasks = self.user.filter_task_month(datetime.now())
-        if text == "全部":
+        elif text == "全部":
             tasks = self.user.tasks
+        else:
+            tasks = self.user.filter_by_tag(text)
         # if text == "自动":
         #     tasks = self.user.auto_schedule_tasks(datetime.now())
 
@@ -259,11 +265,70 @@ class TodoListPage(QWidget):
         self.show_view(self.select_view_combo.currentText())
 
     def sync_task(self):
-        self.show_view(self.select_view_combo.currentText())
+        self.user.clear_completed()
+        self.select_view_combo.clear()
+        self.select_view_combo.addItems(["本日", "本周", "本月", "全部"])
+        self.select_view_combo.addItems(self.user.get_tags())
+        self.show_view("本日")
 
     def schedule_tasks_auto(self):
         tasks = self.user.auto_schedule_tasks(datetime.now())
-        self.todo_list.clear()
+        '''self.todo_list.clear()
         for task in tasks:
             item = self.construct_list_item(task)
-            self.todo_list.setItemWidget(item.list_item, item)
+            self.todo_list.setItemWidget(item.list_item, item)'''
+        d = DailySchedule(tasks)
+        d.exec()
+
+class ScheduleItem(QWidget):
+    def __init__(self, task: 'Task', *args, **kwargs) -> None:
+        super(ScheduleItem, self).__init__(*args, **kwargs)
+        layout = QHBoxLayout()
+        self.task = task
+        self.name = QLabel(task.title,self)
+
+        self.start_time = QLabel(str(task.running_start_time), self)
+        self.start_time.setStyleSheet("color: blue")
+
+        self.end_time = QLabel(str(task.running_end_time), self)
+        self.end_time.setStyleSheet("color: red")
+
+        layout.addWidget(self.name)
+        layout.addWidget(self.start_time)
+        layout.addWidget(self.end_time)
+        self.setLayout(layout)
+
+         # 设置右键菜单
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.rightClickMenu)
+        self.show()
+    def rightClickMenu(self):
+        self.rmenu = QMenu()
+
+        self.action_edit = QAction("详情", self)
+        self.action_edit.triggered.connect(self.rmenu_edit)
+
+        self.rmenu.addActions(
+            [self.action_edit])
+        self.rmenu.popup(QCursor.pos())
+    
+    def rmenu_edit(self):
+        te = TaskEdit("任务详情", self.task)
+        te.exec()
+    
+class DailySchedule(QDialog):
+    def __init__(self, tasks: List['Task'], *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        layout = QVBoxLayout()
+
+        self.l = QListWidget(self)
+        layout.addWidget(self.l)
+
+        for task in tasks:
+            widget = QListWidgetItem(self.l)
+            widget.setSizeHint(QSize(60, 100))
+            self.l.setItemWidget(widget, ScheduleItem(task,self.l))
+
+        self.setLayout(layout)
+        self.setGeometry(300,300,720,405)
+        self.show()

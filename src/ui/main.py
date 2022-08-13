@@ -69,12 +69,15 @@ class MainWindow(QMainWindow,QtStyleTools):
         self.todo_list.change_user(user)
         self.history_list.change_user(user)
         self.calender.change_user(user)
+        self.daily.change_user(user)
 
     def sync_task(self):
         """将task数据的变化和GUI同步"""
         self.todo_list.sync_task()
         self.history_list.sync_task()
         self.calender.sync_task()
+        self.daily.sync_task()
+        self.user_config.sync_task()
 
     def change_theme(self):
         if self.theme:

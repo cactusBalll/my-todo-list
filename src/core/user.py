@@ -159,9 +159,19 @@ class User:
             print(i.title, "startTime: ", i.running_start_time, "endTime: ", i.running_end_time, sep=" ")
         return ret
 
-
-
-
+    def get_tags(self):
+        ret = set()
+        for task in self.tasks:
+            for cate in task.category:
+                ret.add(cate)
+        return list(ret)
+    
+    def filter_by_tag(self, tag: str):
+        ret = []
+        for task in self.tasks:
+            if tag in task.category:
+                ret.append(task)
+        return ret
 
 
 

@@ -99,7 +99,7 @@ class TaskEdit(QDialog):
         if not self.task.description:
             self.task.description = ""
         if not self.task.timecost:
-            self.task.timecost = 0
+            self.task.timecost = 1
         if not self.task.importance:
             self.task.importance = 0
         if not self.task.category:
@@ -241,7 +241,7 @@ class DailyTaskEdit(QDialog):
         if not self.task.description:
             self.task.description = ""
         if not self.task.timecost:
-            self.task.timecost = 0
+            self.task.timecost = 1
         if not self.task.importance:
             self.task.importance = 0
         if not self.task.category:

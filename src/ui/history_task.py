@@ -130,7 +130,7 @@ class HistoryTodoItem(QWidget):
             self.delete_me.emit(self.list_item, self.task)
             Storage.save()
 
-    def mouseMoveEvent(self, e):
+    '''def mouseMoveEvent(self, e):
         # 用于拖拽
         # if e.buttons() != Qt.RightButton:
         #    return
@@ -141,7 +141,7 @@ class HistoryTodoItem(QWidget):
         drag.setMimeData(mimeData)
         drag.setHotSpot(e.pos() - self.rect().topLeft())
 
-        dropAction = drag.exec_(Qt.MoveAction)
+        dropAction = drag.exec_(Qt.MoveAction)'''
 
     def get_state_widget(self, state: int) -> QLabel:
 

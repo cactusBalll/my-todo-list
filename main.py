@@ -39,7 +39,7 @@ def init_app() -> Tuple[Storage, str]:
 
 from freezegun import freeze_time
 freezer = freeze_time("2022-8-9 17:51:00")
-#freezer.start()
+#freezer.start() 用于时间相关的测试
 QtCore.QCoreApplication.setAttribute(
     QtCore.Qt.AA_EnableHighDpiScaling)  # 高分辨率兼容
 app = QApplication(sys.argv)
