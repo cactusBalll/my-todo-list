@@ -124,7 +124,7 @@ class ChangeUserDialog(QDialog):
     def confirm(self):
         user = self.combo_box.currentText()
         cond = QMessageBox.question(
-            self, f"确认切换", "将切换用户为{user}", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            self, "确认切换", f"将切换用户为{user}", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
         if cond == QMessageBox.StandardButton.Yes:
             self.user_changed.emit(user)
             self.accept()

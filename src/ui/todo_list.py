@@ -287,10 +287,10 @@ class ScheduleItem(QWidget):
         self.task = task
         self.name = QLabel(task.title,self)
 
-        self.start_time = QLabel(str(task.running_start_time), self)
+        self.start_time = QLabel(f"开始时间:{task.running_start_time}", self)
         self.start_time.setStyleSheet("color: blue")
 
-        self.end_time = QLabel(str(task.running_end_time), self)
+        self.end_time = QLabel(f"结束时间:{task.running_end_time}", self)
         self.end_time.setStyleSheet("color: red")
 
         layout.addWidget(self.name)
