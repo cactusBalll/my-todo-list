@@ -85,6 +85,7 @@ class UserConfigPage(QWidget):
             self.current_user = User(text)
             self.s.users.append(self.current_user)
             self.name_label.setText(text)
+            self.cp_ratio_lb.setText(f"当前任务完成率:{self.calcu_cp_ratio()*100:.2f}%")
             self.sig_user_change.emit(self.current_user)
             self.s.save()
 
